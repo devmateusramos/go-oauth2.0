@@ -2,34 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
-	p1 := person{
-		First: "Jenny",
-	}
-
-	p2 := person{
-		First: "James",
-	}
-
-	xp := []person{p1, p2}
-
-	bs, err := json.Marshal(xp)
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	fmt.Println(bs)
-	fmt.Println(string(bs))
-
-	p1Json, _ := json.Marshal(p1)
-	fmt.Println(p1Json)
-	fmt.Println(string(p1Json))
-
 	http.HandleFunc("/encode", foo)
 	http.HandleFunc("/decode", bar)
 
@@ -41,9 +18,20 @@ type person struct {
 }
 
 func foo(w http.ResponseWriter, r *http.Request) {
-
+	p1 := person{
+		First: "Mateus",
+	}
+	err := json.NewEncoder(w).Encode(p1)
+	if err != nil {
+		log.Println("Encoded bad data", err)
+	}
 }
 
 func bar(w http.ResponseWriter, r *http.Request) {
+	var p1 person
+	if err := json.NewDecoder(r.Body).Decode(&p1); err != nil {
+		log.Println("Decode bad data", err)
+	}
 
+	log.Println(p1)
 }
